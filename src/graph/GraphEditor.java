@@ -74,7 +74,7 @@ public class GraphEditor {
      * @return the file contains data of user
      */
     static public String getJSONFilename(Node user) {
-        return "data/" + user.getUser() + ".json";
+        return user.getUser() + ".json";
     }
 
     /**
@@ -91,7 +91,7 @@ public class GraphEditor {
      * @return true if this user has been crawled
      */
     public static boolean crawled(Node user) {
-        String nodeJSON = "data/" + user.getUser() + "_node.json";
+        String nodeJSON = getJSONFilename(user);
         if (Files.exists(Paths.get(nodeJSON))) {
             return true;
         }

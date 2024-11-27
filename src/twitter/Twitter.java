@@ -133,9 +133,9 @@ public class Twitter{
         }
         for (String url : tweets) {
             Node tweet = Node.constructFromTweetUrl(url);
-            crawlTweet(tweet, graph);
             if (user.getUser().compareTo(tweet.getUser()) == 0) {
                 graph.addEdge(tweet, user);
+                crawlTweet(tweet, graph);
             }
             else {
                 graph.addEdge(user, tweet);

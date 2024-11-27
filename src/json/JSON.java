@@ -28,6 +28,9 @@ public class JSON {
     }
 
     public static <T> void dumpToJSON(ArrayList<T> lst, String file) throws IOException {
+        File myFile = new File(directory + file);
+        myFile.createNewFile();
+
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
 
