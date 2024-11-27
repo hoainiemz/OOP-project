@@ -9,7 +9,21 @@ public class CrawlOptions {
     private int maxTweetsPerKol;
     private int maxRepliesPerTweet;
     private int maxUserPerKeyword;
+    private final String FOLLOWER_SELECTOR =  "body > div > div > div.profile-tab.sticky > div > div.profile-card-extra > div.profile-card-extra-links > ul > li.followers > span.profile-stat-num";
+    private final String SHOW_MORE_SELECTOR = "body > div.container > div > div.timeline-container > div > .show-more:not(.timeline-item)";
+    private final String TIMELINE_ITEM_SELECTOR = "body > div.container > div > div.timeline-container > div > div.timeline-item:not(.show-more)";
 
+    public String getShowMoreSelector() {
+        return SHOW_MORE_SELECTOR;
+    }
+
+    public String getTimelineItemSelector() {
+        return TIMELINE_ITEM_SELECTOR;
+    }
+
+    public String getFollowerSelector() {
+        return FOLLOWER_SELECTOR;
+    }
 
     CrawlOptions() {
         kolMinFollower = 400000;

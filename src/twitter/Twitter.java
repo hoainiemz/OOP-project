@@ -110,21 +110,21 @@ public class Twitter{
         if (GraphEditor.crawled(user)) {
             return;
         }
-        int followers = Str.stoi(findElement("body > div > div > div.profile-tab.sticky > div > div.profile-card-extra > div.profile-card-extra-links > ul > li.followers > span.profile-stat-num").getAttribute("innerHTML"));
+        int followers = Str.stoi(findElement(options.getFollowerSelector()).getAttribute("innerHTML"));
         if (followers < options.getKolMinFollower()) {
             return;
         }
         List<String> tweets = new ArrayList<>();
         int cnt = 0;
         while (true) {
-            wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("body > div.container > div > div.timeline-container > div > .show-more:not(.timeline-item)")));
-            WebElement showMore = driver.findElement(By.cssSelector("body > div.container > div > div.timeline-container > div > .show-more:not(.timeline-item)"));
-            List<WebElement> timeline = driver.findElements(By.cssSelector("body > div.container > div > div.timeline-container > div > div.timeline-item:not(.show-more)"));
+            wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector(options.getShowMoreSelector())));
+            WebElement showMore = driver.findElement(By.cssSelector(options.getShowMoreSelector()));
+            List<WebElement> timelineItem = driver.findElements(By.cssSelector(options.getTimelineItemSelector()));
             if (cnt >= options.getMaxTweetPerUser()) {
                 break;
             }
-            for (int i = 0; cnt < options.getMaxTweetPerUser() && i < timeline.size(); i++) {
-                WebElement tweet = timeline.get(i);
+            for (int i = 0; cnt < options.getMaxTweetPerUser() && i < timelineItem.size(); i++) {
+                WebElement tweet = timelineItem.get(i);
                 String href = tweet.findElement(By.cssSelector("a.tweet-link")).getAttribute("href");
                 tweets.add(href);
                 cnt++;
@@ -153,14 +153,14 @@ public class Twitter{
                 break;
             }
             WebElement showMore;
-            ArrayList<WebElement> timeLine = (ArrayList<WebElement>) driver.findElements(By.cssSelector("body > div > div > div.timeline > .timeline-item:not(.show-more)"));
+            ArrayList<WebElement> timelineItem = (ArrayList<WebElement>) driver.findElements(By.cssSelector(options.getTimelineItemSelector()));
             try {
-                showMore = driver.findElement(By.cssSelector("body > div > div > div.timeline > .show-more:not(.timeline-item)"));
+                showMore = driver.findElement(By.cssSelector(options.getShowMoreSelector()));
             }
             catch(Exception NoSuchElementException) {
                 break;
             }
-            for (WebElement user : timeLine) {
+            for (WebElement user : timelineItem) {
                 String handle = user.findElement(By.cssSelector("a.username")).getAttribute("innerHTML");
                 if (handle.charAt(0) == '@') {
                     handle = handle.substring(1);
