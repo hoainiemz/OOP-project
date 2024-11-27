@@ -14,6 +14,8 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import std.Str;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +26,6 @@ public class Twitter{
     private WebDriver driver;
     private Actions actions;
     private WebDriverWait wait;
-    private int counter = 0;
 
     public Twitter(CrawlOptions options) throws InterruptedException {
         this.options = options;
@@ -37,14 +38,11 @@ public class Twitter{
         TimeUnit.SECONDS.sleep(5);
     }
 
-    public int getCounter() {
-        return counter;
-    }
-
-    public void setCounter(int counter) {
-        this.counter = counter;
-    }
-
+    /**
+     * navigate the browser to url
+     * @param url
+     * @throws InterruptedException
+     */
     public void visit(String url) throws InterruptedException {
         if (!url.startsWith("https://")) {
             url = "https://" + url;
@@ -52,13 +50,23 @@ public class Twitter{
         this.driver.navigate().to(url);
     }
 
+    /**
+     * @param selector
+     * @return the WebElement given the CSS slector
+     */
     private WebElement findElement(String selector) {
         return wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(selector)));
     }
 
+    /**
+     * crawl the tweet, add the crawled edges to graph
+     * @param tweet
+     * @param graph
+     * @throws InterruptedException
+     * @throws IOException
+     */
     public void crawlTweet(Node tweet, GraphEditor graph) throws InterruptedException, IOException {
         visit(tweet.getUrl());
-        graph.addNode(tweet);
         while (true) {
             int cnt = 0;
             List<WebElement> replies = driver.findElements(By.cssSelector("#r > .reply.thread.thread-line"));
@@ -71,14 +79,12 @@ public class Twitter{
                     continue;
                 }
                 Node commenter = new Node(handle);
-                crawlUser(commenter, graph, false);
                 graph.addEdge(commenter, tweet);
                 cnt++;
                 if (cnt >= options.getMaxRepliesPerTweet()) {
                     break;
                 }
             }
-            graph.save();
             if (cnt >= options.getMaxRepliesPerTweet()) {
                 break;
             }
@@ -92,36 +98,41 @@ public class Twitter{
         }
     }
 
-    public void crawlUser(Node user, GraphEditor graph, boolean getTweet) throws InterruptedException, IOException {
-        if (!getTweet || !graph.addNode(user)) {
+    /**
+     * crawl the user, save the crawled data to the json file corresponding to the user
+     * @param user
+     * @throws InterruptedException
+     * @throws IOException
+     */
+    public void crawlUser(Node user) throws InterruptedException, IOException {
+        visit(user.getUrl());
+        GraphEditor graph = new GraphEditor();
+        if (GraphEditor.crawled(user)) {
             return;
         }
-        visit(user.getUrl());
         int followers = Str.stoi(findElement("body > div > div > div.profile-tab.sticky > div > div.profile-card-extra > div.profile-card-extra-links > ul > li.followers > span.profile-stat-num").getAttribute("innerHTML"));
         if (followers < options.getKolMinFollower()) {
             return;
         }
-        setCounter(getCounter() + 1);
         List<String> tweets = new ArrayList<>();
         int cnt = 0;
         while (true) {
-            wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("body > div.container > div > div.timeline-container > div > .show-more")));
-            List<WebElement> showMore = driver.findElements(By.cssSelector("body > div.container > div > div.timeline-container > div > .show-more"));
-            List<WebElement> timeline = driver.findElements(By.cssSelector("body > div.container > div > div.timeline-container > div > div.timeline-item"));
-            if (timeline.size() < 5 || cnt >= options.getMaxTweetPerUser()) {
+            wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("body > div.container > div > div.timeline-container > div > .show-more:not(.timeline-item)")));
+            WebElement showMore = driver.findElement(By.cssSelector("body > div.container > div > div.timeline-container > div > .show-more:not(.timeline-item)"));
+            List<WebElement> timeline = driver.findElements(By.cssSelector("body > div.container > div > div.timeline-container > div > div.timeline-item:not(.show-more)"));
+            if (cnt >= options.getMaxTweetPerUser()) {
                 break;
             }
-            for (int i = 1; cnt < options.getMaxTweetPerUser() && i < timeline.size(); i++) {
+            for (int i = 0; cnt < options.getMaxTweetPerUser() && i < timeline.size(); i++) {
                 WebElement tweet = timeline.get(i);
                 String href = tweet.findElement(By.cssSelector("a.tweet-link")).getAttribute("href");
                 tweets.add(href);
                 cnt++;
             }
-            graph.save();
-            showMore.get(showMore.size() - 1).click();
+            showMore.click();
         }
         for (String url : tweets) {
-            Node tweet = Node.constructFromTweet(url);
+            Node tweet = Node.constructFromTweetUrl(url);
             crawlTweet(tweet, graph);
             if (user.getUser().compareTo(tweet.getUser()) == 0) {
                 graph.addEdge(tweet, user);
@@ -130,8 +141,7 @@ public class Twitter{
                 graph.addEdge(user, tweet);
             }
         }
-        graph.save();
-        System.out.println("Done! :))");
+        graph.save(user);
     }
 
     public void crawlKeyword(String keyword, ArrayList<String> list) throws InterruptedException, IOException {
@@ -174,11 +184,10 @@ public class Twitter{
         }
     }
 
-    void crawl(ArrayList<String> handles, GraphEditor graph) throws IOException, InterruptedException {
+    void crawl(ArrayList<String> handles) throws IOException, InterruptedException {
         for (String handle : handles) {
-            crawlUser(new Node(handle), graph, true);
+            crawlUser(new Node(handle));
         }
         System.out.println("Done! :)");
-        System.out.println("Crawled datas from " + getCounter() + " KOLs.");
     }
 }

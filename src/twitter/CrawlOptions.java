@@ -10,10 +10,11 @@ public class CrawlOptions {
     private int maxRepliesPerTweet;
     private int maxUserPerKeyword;
 
+
     CrawlOptions() {
-        kolMinFollower = 200000;
-        maxTweetsPerKol = 120;
-        maxRepliesPerTweet = 120;
+        kolMinFollower = 400000;
+        maxTweetsPerKol = 2;
+        maxRepliesPerTweet = 2;
         maxUserPerKeyword = 20;
     }
 

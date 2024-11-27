@@ -45,9 +45,13 @@ public class Node{
     }
 
     public boolean isUser() {
-        return xpath == "";
+        return xpath.compareTo("") == 0;
     }
 
+    /**
+     * the url of the user/tweet
+     * @return
+     */
     public String getUrl() {
         if (isUser()) {
             return "https://nitter.poast.org/" + user;
@@ -55,13 +59,17 @@ public class Node{
         return "https://nitter.poast.org/" + user + "/status/" + xpath;
     }
 
-    public static Node constructFromTweet(String s) {
+    /**
+     * @param url
+     * @return the adress of the new node constructed by url
+     */
+    public static Node constructFromTweetUrl(String url) {
         String name = null, xpath = null;
-        int u = s.lastIndexOf('/');
-        xpath = s.substring(u + 1);
-        int l = Str.nthIndexOf(s, '/', 3);
-        int r = s.indexOf('/', l + 1);
-        name = s.substring(l + 1, r);
+        int u = url.lastIndexOf('/');
+        xpath = url.substring(u + 1);
+        int l = Str.nthIndexOf(url, '/', 3);
+        int r = url.indexOf('/', l + 1);
+        name = url.substring(l + 1, r);
         return new Node(name, xpath);
     }
 }
