@@ -74,7 +74,7 @@ public class GraphEditor {
      * @return the file contains data of user
      */
     static public String getJSONFilename(Node user) {
-        return user.getUser() + ".json";
+        return "crawled/" + user.getUser() + ".json";
     }
 
     /**
