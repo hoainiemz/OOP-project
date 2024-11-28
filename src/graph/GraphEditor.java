@@ -3,6 +3,7 @@ package graph;
 
 import com.mxgraph.layout.mxCircleLayout;
 import com.mxgraph.layout.mxIGraphLayout;
+import com.mxgraph.model.mxGraphModel;
 import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.util.mxCellRenderer;
 import com.mxgraph.view.mxGraph;
@@ -34,6 +35,12 @@ class NodeComparator implements Comparator<Node> {
             return p1.getXpath().compareTo(p2.getXpath());
         }
         return tmp;
+    }
+}
+class StringComparator implements Comparator<String> {
+    @Override
+    public int compare(String p1, String p2) {
+        return p1.compareTo(p2);
     }
 }
 
@@ -120,26 +127,52 @@ public class GraphEditor {
         visualize();
     }
 
+    public Set<Node> getNodeList() {
+        TreeSet<Node> nodeList = new TreeSet<>(new NodeComparator());
+        for (Pair<Node, Node> edge : edgesList) {
+            nodeList.add(edge.getKey());
+            nodeList.add(edge.getValue());
+        }
+        return nodeList;
+    }
+
     public void visualize() {
+        // Construct graph
+        int idx = 0;
+        Graph<String, DefaultEdge> graph = new DefaultDirectedGraph<>(DefaultEdge.class);
+        Map<Node, String> vertexStringMapper = new TreeMap<>(new NodeComparator());
+        Map<String, Object> vertexObjMapper = new TreeMap<>(new StringComparator());
+        Set<Node>NodeSet = getNodeList();
+        for (Node node : NodeSet) {
+            if (node.isUser()) {
+//                vertexStringMapper.put(node, graph.addVertex(node.getUser()));
+                vertexStringMapper.put(node, node.getUser());
+                graph.addVertex(node.getUser());
+            }
+            else {
+                idx++;
+//                vertexStringMapper.put(node, graph.addVertex(Str.itos(idx))); ;
+                vertexStringMapper.put(node, Str.itos(idx));
+                graph.addVertex(Str.itos(idx));
+            }
+        }
+        for (Pair<Node, Node> edge : edgesList) {
+            graph.addEdge(vertexStringMapper.get(edge.getKey()), vertexStringMapper.get(edge.getValue()));
+        }
         // Create a new graph for visualization
         mxGraph mxGraph = new mxGraph();
         Object parent = mxGraph.getDefaultParent();
 
-        Map<String, Object> vertexMap = new HashMap<>();
-
         mxGraph.getModel().beginUpdate();
         try {
-            // Create vertices
             for (String vertex : graph.vertexSet()) {
-                Object mxVertex = mxGraph.insertVertex(parent, null, vertex, 0, 0, 80, 30);
-                vertexMap.put(vertex, mxVertex);
+                vertexObjMapper.put(vertex, mxGraph.insertVertex(parent, null, vertex, 0, 0, 80, 30));
             }
-
             // Create edges
             for (DefaultEdge edge : graph.edgeSet()) {
                 String source = graph.getEdgeSource(edge);
                 String target = graph.getEdgeTarget(edge);
-                mxGraph.insertEdge(parent, null, "", vertexMap.get(source), vertexMap.get(target), target);
+                mxGraph.insertEdge(parent, null, "", vertexObjMapper.get(source), vertexObjMapper.get(target), target);
             }
         } finally {
             mxGraph.getModel().endUpdate();

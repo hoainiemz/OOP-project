@@ -8,10 +8,9 @@ import java.util.ArrayList;
 
 public class Main {
     public static void main(String[] args) throws IOException, InterruptedException {
-//        CrawlOptions options = new CrawlOptions();
-//        Twitter agent = new Twitter(options);
+        CrawlOptions options = new CrawlOptions();
+        Twitter agent = new Twitter(options);
 //        agent.crawl(JSON.loadFromJSON("usernames.json"));
-        GraphEditor graph = new GraphEditor();
-        graph.load();
+        agent.search();
     }
 }
