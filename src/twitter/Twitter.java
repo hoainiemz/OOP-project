@@ -44,10 +44,19 @@ public class Twitter{
      * @throws InterruptedException
      */
     public void visit(String url) throws InterruptedException {
+        int i = 0;
         if (!url.startsWith("https://")) {
             url = "https://" + url;
         }
-        this.driver.navigate().to(url);
+        while (true) {
+            try {
+                this.driver.navigate().to(url);
+                return;
+            }
+            catch(Exception InterruptedException) {
+                continue;
+            }
+        }
     }
 
     /**
@@ -117,8 +126,8 @@ public class Twitter{
         List<String> tweets = new ArrayList<>();
         int cnt = 0;
         while (true) {
-            wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector(options.getShowMoreSelector())));
-            WebElement showMore = driver.findElement(By.cssSelector(options.getShowMoreSelector()));
+            wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector(options.getCrawlShowMoreSelector())));
+            WebElement showMore = driver.findElement(By.cssSelector(options.getCrawlShowMoreSelector()));
             List<WebElement> timelineItem = driver.findElements(By.cssSelector(options.getTimelineItemSelector()));
             if (cnt >= options.getMaxTweetPerUser()) {
                 break;
@@ -153,9 +162,9 @@ public class Twitter{
                 break;
             }
             WebElement showMore;
-            ArrayList<WebElement> timelineItem = (ArrayList<WebElement>) driver.findElements(By.cssSelector(options.getTimelineItemSelector()));
+            ArrayList<WebElement> timelineItem = (ArrayList<WebElement>) driver.findElements(By.cssSelector(options.getSearchTimelineItemSelector()));
             try {
-                showMore = driver.findElement(By.cssSelector(options.getShowMoreSelector()));
+                showMore = driver.findElement(By.cssSelector(options.getSearchShowMoreSelector()));
             }
             catch(Exception NoSuchElementException) {
                 break;
@@ -182,9 +191,10 @@ public class Twitter{
         for (String keyWord : keyWords) {
            crawlKeyword(keyWord, handleList);
         }
+        JSON.dumpToJSON(handleList, "usernames.json");
     }
 
-    void crawl(ArrayList<String> handles) throws IOException, InterruptedException {
+    public void crawl(ArrayList<String> handles) throws IOException, InterruptedException {
         for (String handle : handles) {
             crawlUser(new Node(handle));
         }

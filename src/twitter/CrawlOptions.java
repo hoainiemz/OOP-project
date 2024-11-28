@@ -10,11 +10,19 @@ public class CrawlOptions {
     private int maxRepliesPerTweet;
     private int maxUserPerKeyword;
     private final String FOLLOWER_SELECTOR =  "body > div > div > div.profile-tab.sticky > div > div.profile-card-extra > div.profile-card-extra-links > ul > li.followers > span.profile-stat-num";
-    private final String SHOW_MORE_SELECTOR = "body > div.container > div > div.timeline-container > div > .show-more:not(.timeline-item)";
+    private final String CRAWL_SHOW_MORE_SELECTOR = "body > div.container > div > div.timeline-container > div > .show-more:not(.timeline-item)";
     private final String TIMELINE_ITEM_SELECTOR = "body > div.container > div > div.timeline-container > div > div.timeline-item:not(.show-more)";
+    private final String SEARCH_SHOW_MORE_SELECTOR = "body > div.container > div > div.timeline > div.show-more:not(.timeline-item)";
+    private final String SEARCH_TIMELINE_ITEM_SELECTOR = "body > div > div > div.timeline > div:not(.show-more)";
 
-    public String getShowMoreSelector() {
-        return SHOW_MORE_SELECTOR;
+    public String getSearchShowMoreSelector() {return SEARCH_SHOW_MORE_SELECTOR;}
+
+    public String getCrawlShowMoreSelector() {
+        return CRAWL_SHOW_MORE_SELECTOR;
+    }
+
+    public String getSearchTimelineItemSelector() {
+        return SEARCH_TIMELINE_ITEM_SELECTOR;
     }
 
     public String getTimelineItemSelector() {
@@ -25,10 +33,10 @@ public class CrawlOptions {
         return FOLLOWER_SELECTOR;
     }
 
-    CrawlOptions() {
-        kolMinFollower = 200000;
-        maxTweetsPerKol = 2;
-        maxRepliesPerTweet = 2;
+    public CrawlOptions() {
+        kolMinFollower = 100000;
+        maxTweetsPerKol = 50;
+        maxRepliesPerTweet = 20;
         maxUserPerKeyword = 20;
     }
 
