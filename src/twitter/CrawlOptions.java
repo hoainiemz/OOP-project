@@ -26,7 +26,7 @@ public class CrawlOptions {
     }
 
     CrawlOptions() {
-        kolMinFollower = 400000;
+        kolMinFollower = 200000;
         maxTweetsPerKol = 2;
         maxRepliesPerTweet = 2;
         maxUserPerKeyword = 20;

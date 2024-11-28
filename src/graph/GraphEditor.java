@@ -20,8 +20,11 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 class NodeComparator implements Comparator<Node> {
     @Override
@@ -92,21 +95,66 @@ public class GraphEditor {
      */
     public static boolean crawled(Node user) {
         String nodeJSON = getJSONFilename(user);
-        if (Files.exists(Paths.get(nodeJSON))) {
+        if (JSON.exists(nodeJSON)) {
             return true;
         }
         return false;
     }
-//    public void load() throws IOException {
-//        ArrayList<LinkedHashMap<String, String>> arr1 = JSON.loadFromJSON("nodes.json");
-//        userList = new TreeSet<>(new NodeComparator());
-//        for (LinkedHashMap<String, String> tmp : arr1) {
-//            userList.add(new Node(tmp));
-//        }
-//        ArrayList<LinkedHashMap<LinkedHashMap<String, String>, LinkedHashMap<String, String> >> arr2 = JSON.loadFromJSON("edges.json");
-//        edgesList = new ArrayList<>();
-//        for (LinkedHashMap<LinkedHashMap<String, String>, LinkedHashMap<String, String> > tmp : arr2) {
-//            edgesList.add(new Pair<Node, Node>(new Node(tmp.get("key")), new Node(tmp.get("value"))));
-//        }
-//    }
+
+    /**
+     * load crawled edges into the graph
+     * @throws IOException
+     */
+    public void load() throws IOException {
+        Stream<Path> stream = Files.list(Paths.get("data/crawled"));
+        Set<String> files = stream.filter(file -> !Files.isDirectory(file)).map(Path::getFileName).map(Path::toString).collect(Collectors.toSet());
+        edgesList = new ArrayList<>();
+        for (String file : files) {
+            ArrayList<LinkedHashMap<LinkedHashMap<String, String>, LinkedHashMap<String, String> >> edges = JSON.loadFromJSON("/crawled/" + file);
+            for (LinkedHashMap<LinkedHashMap<String, String>, LinkedHashMap<String, String> > tmp : edges) {
+                edgesList.add(new Pair<Node, Node>(new Node(tmp.get("key")), new Node(tmp.get("value"))));
+            }
+        }
+        System.out.println("Graph loaded! :))");
+        // Visualize the graph
+        visualize();
+    }
+
+    public void visualize() {
+        // Create a new graph for visualization
+        mxGraph mxGraph = new mxGraph();
+        Object parent = mxGraph.getDefaultParent();
+
+        Map<String, Object> vertexMap = new HashMap<>();
+
+        mxGraph.getModel().beginUpdate();
+        try {
+            // Create vertices
+            for (String vertex : graph.vertexSet()) {
+                Object mxVertex = mxGraph.insertVertex(parent, null, vertex, 0, 0, 80, 30);
+                vertexMap.put(vertex, mxVertex);
+            }
+
+            // Create edges
+            for (DefaultEdge edge : graph.edgeSet()) {
+                String source = graph.getEdgeSource(edge);
+                String target = graph.getEdgeTarget(edge);
+                mxGraph.insertEdge(parent, null, "", vertexMap.get(source), vertexMap.get(target), target);
+            }
+        } finally {
+            mxGraph.getModel().endUpdate();
+        }
+
+        // Create a layout
+        mxCircleLayout layout = new mxCircleLayout(mxGraph);
+        layout.execute(parent);
+
+        // Create a Swing component to display the graph
+        mxGraphComponent graphComponent = new mxGraphComponent(mxGraph);
+        JFrame frame = new JFrame("Graph Visualization");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.getContentPane().add(graphComponent);
+        frame.setSize(400, 400);
+        frame.setVisible(true);
+    }
 }

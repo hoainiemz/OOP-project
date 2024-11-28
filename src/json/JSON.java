@@ -41,4 +41,8 @@ public class JSON {
 
 //        System.out.println("JSON file " + file + " created!");
     }
+    
+    public static boolean exists(String file) {
+        return (new File(directory + file)).exists();
+    }
 }

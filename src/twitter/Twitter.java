@@ -105,11 +105,11 @@ public class Twitter{
      * @throws IOException
      */
     public void crawlUser(Node user) throws InterruptedException, IOException {
-        visit(user.getUrl());
-        GraphEditor graph = new GraphEditor();
         if (GraphEditor.crawled(user)) {
             return;
         }
+        visit(user.getUrl());
+        GraphEditor graph = new GraphEditor();
         int followers = Str.stoi(findElement(options.getFollowerSelector()).getAttribute("innerHTML"));
         if (followers < options.getKolMinFollower()) {
             return;
