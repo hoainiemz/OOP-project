@@ -19,7 +19,7 @@ public class Environment {
         agent.crawl(JSON.loadFromJSON("usernames.json"));
     }
 
-    public static void main(String[] args) throws InterruptedException, IOException {
+    public static void main(String[] args) throws InterruptedException, IOException     {
         crawl();
     }
 }

@@ -21,6 +21,13 @@ public class CrawlOptions {
         return CRAWL_SHOW_MORE_SELECTOR;
     }
 
+    public CrawlOptions() {
+        kolMinFollower = 100000;
+        maxTweetsPerKol = 50;
+        maxRepliesPerTweet = 20;
+        maxUserPerKeyword = 20;
+    }
+
     public String getSearchTimelineItemSelector() {
         return SEARCH_TIMELINE_ITEM_SELECTOR;
     }
@@ -31,13 +38,6 @@ public class CrawlOptions {
 
     public String getFollowerSelector() {
         return FOLLOWER_SELECTOR;
-    }
-
-    public CrawlOptions() {
-        kolMinFollower = 100000;
-        maxTweetsPerKol = 50;
-        maxRepliesPerTweet = 20;
-        maxUserPerKeyword = 20;
     }
 
     public int getMaxUserPerKeyword() {

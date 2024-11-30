@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 public class Node{
     private String user;
     private  String xpath;
+    private static String href = "https://nitter.poast.org/";
 
     public Node(LinkedHashMap<String, String> src) {
         this.user = src.get("user");
@@ -54,9 +55,9 @@ public class Node{
      */
     public String getUrl() {
         if (isUser()) {
-            return "https://nitter.poast.org/" + user;
+            return href + user;
         }
-        return "https://nitter.poast.org/" + user + "/status/" + xpath;
+        return href + user + "/status/" + xpath;
     }
 
     /**

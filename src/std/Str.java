@@ -1,5 +1,7 @@
 package std;
 
+import java.util.Comparator;
+
 public class Str {
     /**
      * convert String str to int
@@ -32,5 +34,12 @@ public class Str {
             x /= 10;
         }
         return str.toString();
+    }
+
+    class StringComparator implements Comparator<String> {
+        @Override
+        public int compare(String p1, String p2) {
+            return p1.compareTo(p2);
+        }
     }
 }

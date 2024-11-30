@@ -13,6 +13,7 @@ import org.jgrapht.graph.*;
 import std.Pair;
 import std.Str;
 import json.JSON;
+import std.StringComparator;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -35,12 +36,6 @@ class NodeComparator implements Comparator<Node> {
             return p1.getXpath().compareTo(p2.getXpath());
         }
         return tmp;
-    }
-}
-class StringComparator implements Comparator<String> {
-    @Override
-    public int compare(String p1, String p2) {
-        return p1.compareTo(p2);
     }
 }
 

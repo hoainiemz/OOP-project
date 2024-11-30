@@ -2,6 +2,8 @@ package twitter;
 
 import graph.*;
 import json.JSON;
+import org.antlr.v4.runtime.tree.Tree;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.By;
 import org.openqa.selenium.PageLoadStrategy;
 import org.openqa.selenium.WebDriver;
@@ -12,6 +14,7 @@ import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import std.Str;
+import std.StringComparator;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -19,6 +22,7 @@ import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 
 public class Twitter{
@@ -35,6 +39,7 @@ public class Twitter{
         this.driver = new ChromeDriver(driverOptions);
         wait = new WebDriverWait(driver, Duration.ofSeconds(3));
         visit("https://nitter.poast.org/");
+//        visit("https://xcancel.com/");
         TimeUnit.SECONDS.sleep(5);
     }
 
@@ -51,12 +56,13 @@ public class Twitter{
         while (true) {
             try {
                 this.driver.navigate().to(url);
-                return;
+                break;
             }
             catch(Exception InterruptedException) {
                 continue;
             }
         }
+        TimeUnit.SECONDS.sleep(1);
     }
 
     /**
@@ -80,7 +86,13 @@ public class Twitter{
             int cnt = 0;
             List<WebElement> replies = driver.findElements(By.cssSelector("#r > .reply.thread.thread-line"));
             for (WebElement reply : replies) {
-                String handle = reply.findElement(By.cssSelector("a.username")).getAttribute("innerHTML");
+                String handle;
+                try {
+                    handle = reply.findElement(By.cssSelector("a.username")).getAttribute("innerHTML");
+                }
+                catch (Exception NoSuchElementException) {
+                    continue;
+                }
                 if (handle.charAt(0) == '@') {
                     handle = handle.substring(1);
                 }
@@ -113,20 +125,25 @@ public class Twitter{
      * @throws InterruptedException
      * @throws IOException
      */
-    public void crawlUser(Node user) throws InterruptedException, IOException {
+    public boolean crawlUser(Node user) throws InterruptedException, IOException {
         if (GraphEditor.crawled(user)) {
-            return;
+            return false;
         }
         visit(user.getUrl());
         GraphEditor graph = new GraphEditor();
         int followers = Str.stoi(findElement(options.getFollowerSelector()).getAttribute("innerHTML"));
         if (followers < options.getKolMinFollower()) {
-            return;
+            return false;
         }
         List<String> tweets = new ArrayList<>();
         int cnt = 0;
         while (true) {
-            wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector(options.getCrawlShowMoreSelector())));
+            try {
+                wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector(options.getCrawlShowMoreSelector())));
+            }
+            catch (Exception TimeoutException) {
+                return true;
+            }
             WebElement showMore = driver.findElement(By.cssSelector(options.getCrawlShowMoreSelector()));
             List<WebElement> timelineItem = driver.findElements(By.cssSelector(options.getTimelineItemSelector()));
             if (cnt >= options.getMaxTweetPerUser()) {
@@ -151,6 +168,7 @@ public class Twitter{
             }
         }
         graph.save(user);
+        return true;
     }
 
     public void crawlKeyword(String keyword, ArrayList<String> list) throws InterruptedException, IOException {
@@ -195,9 +213,17 @@ public class Twitter{
     }
 
     public void crawl(ArrayList<String> handles) throws IOException, InterruptedException {
+        TreeSet<String> skipped = new TreeSet<>(new StringComparator());
+        skipped.addAll(JSON.loadFromJSON("skipped.json"));
         for (String handle : handles) {
+            if (skipped.contains(handle)) {
+                continue;
+            }
             crawlUser(new Node(handle));
+            skipped.add(handle);
+            JSON.dumpToJSON(new ArrayList<>(skipped), "skipped.json");
         }
+        JSON.dumpToJSON(new ArrayList<>(skipped), "skipped.json");
         System.out.println("Done! :)");
     }
 }
