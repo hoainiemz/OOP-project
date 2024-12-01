@@ -119,7 +119,7 @@ public class GraphEditor {
         }
         System.out.println("Graph loaded! :))");
         // Visualize the graph
-        visualize();
+//        visualize();
     }
 
     public Set<Node> getNodeList() {
