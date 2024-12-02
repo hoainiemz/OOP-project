@@ -112,7 +112,7 @@ public class GraphEditor {
         Set<String> files = stream.filter(file -> !Files.isDirectory(file)).map(Path::getFileName).map(Path::toString).collect(Collectors.toSet());
         edgesList = new ArrayList<>();
         for (String file : files) {
-            ArrayList<LinkedHashMap<LinkedHashMap<String, String>, LinkedHashMap<String, String> >> edges = JSON.loadFromJSON("/crawled/" + file);
+            ArrayList<LinkedHashMap<LinkedHashMap<String, String>, LinkedHashMap<String, String> >> edges = JSON.loadArrayFromJSON("/crawled/" + file);
             for (LinkedHashMap<LinkedHashMap<String, String>, LinkedHashMap<String, String> > tmp : edges) {
                 edgesList.add(new Pair<Node, Node>(new Node(tmp.get("key")), new Node(tmp.get("value"))));
             }

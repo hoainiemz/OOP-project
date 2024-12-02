@@ -9,6 +9,7 @@ public class CrawlOptions {
     private int maxTweetsPerKol;
     private int maxRepliesPerTweet;
     private int maxUserPerKeyword;
+    private String url;
     private final String FOLLOWER_SELECTOR =  "body > div > div > div.profile-tab.sticky > div > div.profile-card-extra > div.profile-card-extra-links > ul > li.followers > span.profile-stat-num";
     private final String CRAWL_SHOW_MORE_SELECTOR = "body > div.container > div > div.timeline-container > div > .show-more:not(.timeline-item)";
     private final String TIMELINE_ITEM_SELECTOR = "body > div.container > div > div.timeline-container > div > div.timeline-item:not(.show-more)";
@@ -21,11 +22,30 @@ public class CrawlOptions {
         return CRAWL_SHOW_MORE_SELECTOR;
     }
 
-    public CrawlOptions() {
+    private void init() {
         kolMinFollower = 100000;
         maxTweetsPerKol = 50;
         maxRepliesPerTweet = 20;
         maxUserPerKeyword = 20;
+    }
+
+    public CrawlOptions() {
+        init();
+        setUrl("https://nitter.poast.org/");
+    }
+
+    public CrawlOptions(String url) {
+        init();
+        setUrl(url);
+
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     public String getSearchTimelineItemSelector() {

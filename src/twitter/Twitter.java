@@ -3,11 +3,7 @@ package twitter;
 import graph.*;
 import json.JSON;
 import org.antlr.v4.runtime.tree.Tree;
-import org.openqa.selenium.TimeoutException;
-import org.openqa.selenium.By;
-import org.openqa.selenium.PageLoadStrategy;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.interactions.Actions;
@@ -21,6 +17,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
@@ -38,8 +35,7 @@ public class Twitter{
         System.setProperty("webdriver.chrome.driver", "/usr/bin/chromedriver");
         this.driver = new ChromeDriver(driverOptions);
         wait = new WebDriverWait(driver, Duration.ofSeconds(3));
-        visit("https://nitter.poast.org/");
-//        visit("https://xcancel.com/");
+        visit(options.getUrl());
         TimeUnit.SECONDS.sleep(5);
     }
 
@@ -204,7 +200,7 @@ public class Twitter{
     }
 
     public void search() throws IOException, InterruptedException {
-        ArrayList<String> keyWords = JSON.loadFromJSON("searchingkeywords.json");
+        ArrayList<String> keyWords = JSON.loadArrayFromJSON("searchingkeywords.json");
         ArrayList<String> handleList = new ArrayList<>();
         for (String keyWord : keyWords) {
            crawlKeyword(keyWord, handleList);
@@ -214,7 +210,7 @@ public class Twitter{
 
     public void crawl(ArrayList<String> handles) throws IOException, InterruptedException {
         TreeSet<String> skipped = new TreeSet<>(new StringComparator());
-        skipped.addAll(JSON.loadFromJSON("skipped.json"));
+        skipped.addAll(JSON.loadArrayFromJSON("skipped.json"));
         for (String handle : handles) {
             if (skipped.contains(handle)) {
                 continue;
@@ -225,5 +221,21 @@ public class Twitter{
         }
         JSON.dumpToJSON(new ArrayList<>(skipped), "skipped.json");
         System.out.println("Done! :)");
+    }
+
+    public void loadCookies(String file) throws InterruptedException, IOException {
+        ArrayList<LinkedHashMap<String, Object> > cookies = (ArrayList<LinkedHashMap<String, Object>>) ((LinkedHashMap<String, Object>) JSON.loadObjectFromJSON(file)).get("cookies");
+        for (LinkedHashMap<String, Object> cookie : cookies) {
+//            System.out.println(cookie);
+            String name = cookie.get("name").toString();
+            String value = cookie.get("value").toString();
+            Cookie c = new Cookie(name, value);
+            driver.manage().addCookie(c);
+        }
+        driver.navigate().refresh();
+    }
+
+    public void crawlFollowers() throws IOException, InterruptedException {
+        loadCookies("cookies.json");
     }
 }

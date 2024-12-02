@@ -18,13 +18,16 @@ public class Environment {
     public static void crawl() throws InterruptedException, IOException {
         CrawlOptions options = new CrawlOptions();
         Twitter agent = new Twitter(options);
-        agent.crawl(JSON.loadFromJSON("usernames.json"));
+        agent.crawl(JSON.loadArrayFromJSON("usernames.json"));
     }
 
     public static void main(String[] args) throws InterruptedException, IOException     {
 //        crawl();
-        GraphEditor graph = new GraphEditor();
-        graph.load();
-        graph.addEdge(new Node("no1"), new Node("no2"));
+//        GraphEditor graph = new GraphEditor();
+//        graph.load();
+//        graph.addEdge(new Node("no1"), new Node("no2"));
+        CrawlOptions options = new CrawlOptions("https://x.com");
+        Twitter agent = new Twitter(options);
+        agent.crawlFollowers();
     }
 }

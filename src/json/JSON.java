@@ -20,11 +20,18 @@ public class JSON {
         JSON.directory = directory;
     }
 
-    public static <T> ArrayList<T> loadFromJSON(String file) throws IOException {
+    public static <T> ArrayList<T> loadArrayFromJSON(String file) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         ArrayList<T> list = (ArrayList)mapper.readValue(new File(directory + file), ArrayList.class);
         System.out.println("JSON file " + file + " loaded!");
         return list;
+    }
+
+    public static Object loadObjectFromJSON(String file) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        Object res = mapper.readValue(new File(directory + file), Object.class);
+        System.out.println("JSON file " + file + " loaded!");
+        return res;
     }
 
     public static <T> void dumpToJSON(ArrayList<T> lst, String file) throws IOException {
@@ -41,7 +48,7 @@ public class JSON {
 
 //        System.out.println("JSON file " + file + " created!");
     }
-    
+
     public static boolean exists(String file) {
         return (new File(directory + file)).exists();
     }
