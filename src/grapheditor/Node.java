@@ -1,4 +1,4 @@
-package graph;
+package grapheditor;
 
 import std.Str;
 import twitter.CrawlOptions;

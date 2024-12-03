@@ -1,8 +1,8 @@
 package std;
 
 public class Pair<K, V> {
-    private K key;
-    private V value;
+    protected K key;
+    protected V value;
 
     public Pair(K key, V value) {
         this.key = key;

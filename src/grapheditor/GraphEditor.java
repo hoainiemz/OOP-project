@@ -1,9 +1,8 @@
-package graph;
+package grapheditor;
 
 
 import com.mxgraph.layout.mxCircleLayout;
 import com.mxgraph.layout.mxIGraphLayout;
-import com.mxgraph.model.mxGraphModel;
 import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.util.mxCellRenderer;
 import com.mxgraph.view.mxGraph;
@@ -41,10 +40,8 @@ class NodeComparator implements Comparator<Node> {
 
 public class GraphEditor {
     private ArrayList<Pair<Node, Node>> edgesList;
-    private Map<Node, String> mapper;
     public GraphEditor() {
         edgesList = new ArrayList<>();
-        mapper = new TreeMap<>(new NodeComparator());
     }
 
     /**
@@ -144,8 +141,6 @@ public class GraphEditor {
             loadFromFile(file);
         }
         System.out.println("Graph loaded! :))");
-        // Visualize the graph
-//        visualize();
     }
 
     public Set<Node> getNodeList() {

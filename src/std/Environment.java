@@ -1,8 +1,7 @@
 package std;
 
-import graph.GraphEditor;
-import graph.Node;
-import json.JSON;
+import grapheditor.GraphEditor;
+import grapheditor.Grapher;
 import twitter.CrawlOptions;
 import twitter.Twitter;
 
@@ -22,13 +21,11 @@ public class Environment {
     }
 
     public static void main(String[] args) throws InterruptedException, IOException     {
-//        crawl();
 //        GraphEditor graph = new GraphEditor();
 //        graph.load();
 //        graph.addEdge(new Node("no1"), new Node("no2"));
-        CrawlOptions options = new CrawlOptions("https://x.com/");
-        Twitter agent = new Twitter(options);
-//        agent.crawlFollowers();
-        agent.updateUsernameList();
+        Grapher tmp = new Grapher();
+        tmp.load();
+        tmp.test();
     }
 }
