@@ -49,6 +49,11 @@ public class JSON {
 //        System.out.println("JSON file " + file + " created!");
     }
 
+    /**
+     * check if file exist
+     * @param file
+     * @return
+     */
     public static boolean exists(String file) {
         return (new File(directory + file)).exists();
     }

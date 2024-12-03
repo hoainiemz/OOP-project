@@ -57,6 +57,15 @@ public class GraphEditor {
     }
 
     /**
+     * add edge u->v to the graph
+     * @param u
+     * @param v
+     */
+    public void addEdge(String u, String v) {
+        edgesList.add(new Pair<Node, Node>(new Node(u), new Node(v)));
+    }
+
+    /**
      * visualize the graph
      * @param graph
      * @throws IOException
@@ -83,6 +92,14 @@ public class GraphEditor {
     }
 
     /**
+     * @param user
+     * @return the file contains data of user
+     */
+    static public String getJSONFilename(String user) {
+        return "crawled/" + user + ".json";
+    }
+
+    /**
      * save the graph to the user's JSON file
      * @throws IOException
      */
@@ -104,6 +121,18 @@ public class GraphEditor {
     }
 
     /**
+     * load graph from file
+     * @param file
+     * @throws IOException
+     */
+    public void loadFromFile(String file) throws IOException {
+        ArrayList<LinkedHashMap<LinkedHashMap<String, String>, LinkedHashMap<String, String> >> edges = JSON.loadArrayFromJSON("/crawled/" + file);
+        for (LinkedHashMap<LinkedHashMap<String, String>, LinkedHashMap<String, String> > tmp : edges) {
+            edgesList.add(new Pair<Node, Node>(new Node(tmp.get("key")), new Node(tmp.get("value"))));
+        }
+    }
+
+    /**
      * load crawled edges into the graph
      * @throws IOException
      */
@@ -112,10 +141,7 @@ public class GraphEditor {
         Set<String> files = stream.filter(file -> !Files.isDirectory(file)).map(Path::getFileName).map(Path::toString).collect(Collectors.toSet());
         edgesList = new ArrayList<>();
         for (String file : files) {
-            ArrayList<LinkedHashMap<LinkedHashMap<String, String>, LinkedHashMap<String, String> >> edges = JSON.loadArrayFromJSON("/crawled/" + file);
-            for (LinkedHashMap<LinkedHashMap<String, String>, LinkedHashMap<String, String> > tmp : edges) {
-                edgesList.add(new Pair<Node, Node>(new Node(tmp.get("key")), new Node(tmp.get("value"))));
-            }
+            loadFromFile(file);
         }
         System.out.println("Graph loaded! :))");
         // Visualize the graph

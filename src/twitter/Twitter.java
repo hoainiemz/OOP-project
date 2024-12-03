@@ -3,6 +3,7 @@ package twitter;
 import graph.*;
 import json.JSON;
 import org.antlr.v4.runtime.tree.Tree;
+import org.jgrapht.Graph;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -13,6 +14,7 @@ import std.Str;
 import std.StringComparator;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Duration;
@@ -34,7 +36,7 @@ public class Twitter{
         driverOptions.setPageLoadStrategy(PageLoadStrategy.NORMAL);
         System.setProperty("webdriver.chrome.driver", "/usr/bin/chromedriver");
         this.driver = new ChromeDriver(driverOptions);
-        wait = new WebDriverWait(driver, Duration.ofSeconds(3));
+        wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         visit(options.getUrl());
         TimeUnit.SECONDS.sleep(5);
     }
@@ -77,7 +79,7 @@ public class Twitter{
      * @throws IOException
      */
     public void crawlTweet(Node tweet, GraphEditor graph) throws InterruptedException, IOException {
-        visit(tweet.getUrl());
+        visit(tweet.getUrl(options));
         while (true) {
             int cnt = 0;
             List<WebElement> replies = driver.findElements(By.cssSelector("#r > .reply.thread.thread-line"));
@@ -125,7 +127,7 @@ public class Twitter{
         if (GraphEditor.crawled(user)) {
             return false;
         }
-        visit(user.getUrl());
+        visit(user.getUrl(options));
         GraphEditor graph = new GraphEditor();
         int followers = Str.stoi(findElement(options.getFollowerSelector()).getAttribute("innerHTML"));
         if (followers < options.getKolMinFollower()) {
@@ -167,6 +169,13 @@ public class Twitter{
         return true;
     }
 
+    /**
+     * crawl usernames from given keyword and push into list
+     * @param keyword
+     * @param list
+     * @throws InterruptedException
+     * @throws IOException
+     */
     public void crawlKeyword(String keyword, ArrayList<String> list) throws InterruptedException, IOException {
         String url = "https://nitter.poast.org/search?f=users&q=" + keyword;
         visit(url);
@@ -199,6 +208,11 @@ public class Twitter{
         }
     }
 
+    /**
+     * crawl the keyword
+     * @throws IOException
+     * @throws InterruptedException
+     */
     public void search() throws IOException, InterruptedException {
         ArrayList<String> keyWords = JSON.loadArrayFromJSON("searchingkeywords.json");
         ArrayList<String> handleList = new ArrayList<>();
@@ -208,7 +222,13 @@ public class Twitter{
         JSON.dumpToJSON(handleList, "usernames.json");
     }
 
-    public void crawl(ArrayList<String> handles) throws IOException, InterruptedException {
+    /**
+     * crawl the user
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    public void crawl() throws IOException, InterruptedException {
+        ArrayList<String> handles = JSON.loadArrayFromJSON("usernames.json");
         TreeSet<String> skipped = new TreeSet<>(new StringComparator());
         skipped.addAll(JSON.loadArrayFromJSON("skipped.json"));
         for (String handle : handles) {
@@ -223,6 +243,12 @@ public class Twitter{
         System.out.println("Done! :)");
     }
 
+    /**
+     * load twitter cookies into the browser
+     * @param file
+     * @throws InterruptedException
+     * @throws IOException
+     */
     public void loadCookies(String file) throws InterruptedException, IOException {
         ArrayList<LinkedHashMap<String, Object> > cookies = (ArrayList<LinkedHashMap<String, Object>>) ((LinkedHashMap<String, Object>) JSON.loadObjectFromJSON(file)).get("cookies");
         for (LinkedHashMap<String, Object> cookie : cookies) {
@@ -235,7 +261,75 @@ public class Twitter{
         driver.navigate().refresh();
     }
 
-    public void crawlFollowers() throws IOException, InterruptedException {
+    private void autoCrawlFollowers(TreeSet<String> response) {
+        try {
+            findElement("#react-root > div > div > div.css-175oi2r.r-1f2l425.r-13qz1uu.r-417010.r-18u37iz > main > div > div > div > div > div > section > div > div > .css-175oi2r");
+        } catch (Exception e) {
+            return;
+        }
+        while (true) {
+            try {
+                WebElement last = null;
+                List<WebElement> list = driver.findElements(By.cssSelector("#react-root > div > div > div.css-175oi2r.r-1f2l425.r-13qz1uu.r-417010.r-18u37iz > main > div > div > div > div > div > section > div > div > .css-175oi2r"));
+                for (WebElement follower : list) {
+                    String handle = follower.findElement(By.cssSelector("div > div > button > div > div.css-175oi2r.r-1iusvr4.r-16y2uox > div.css-175oi2r.r-1awozwy.r-18u37iz.r-1wtj0ep > div.css-175oi2r.r-1wbh5a2.r-dnmrzs.r-1ny4l3l > div > div.css-175oi2r.r-1awozwy.r-18u37iz.r-1wbh5a2 > div > a > div > div > span")).getAttribute("innerHTML");
+                    response.add(handle);
+                    last = follower;
+                }
+                if (last != null) {
+                    JavascriptExecutor js = (JavascriptExecutor) driver;
+                    js.executeScript("arguments[0].scrollIntoView(true);", last);
+                    js.executeScript("window.scrollBy(0, -100);");
+                    Thread.sleep(1000);
+                }
+            }
+            catch(Exception e) {
+                break;
+            }
+        }
+    }
+
+    public ArrayList<String> crawlFollowersList(Node user) throws InterruptedException {
+        TreeSet<String> response = new TreeSet<>(new StringComparator());
+        visit(user.getUrl(options) + "/verified_followers");
+        autoCrawlFollowers(response);
+        visit(user.getUrl(options) + "/followers");
+        autoCrawlFollowers(response);
+        return new ArrayList<>(response);
+    }
+
+    public ArrayList<String> crawlFollowingList(Node user) throws InterruptedException {
+        TreeSet<String> response = new TreeSet<>(new StringComparator());
+        visit(user.getUrl(options) + "/following");
+        autoCrawlFollowers(response);
+        return new ArrayList<>(response);
+    }
+
+    /**
+     * for all user in usernames.json, add all of their following to usernames.json
+     */
+    public void updateUsernameList() throws IOException, InterruptedException {
+        ArrayList<String> handles = JSON.loadArrayFromJSON("usernames.json");
         loadCookies("cookies.json");
+        TreeSet<String> skipped = new TreeSet<>(new StringComparator());
+        skipped.addAll(JSON.loadArrayFromJSON("skipped.json"));
+        for (String handle : handles) {
+            if (!JSON.exists("crawled/" + handle + ".json") || skipped.contains(handle)) {
+                continue;
+            }
+            GraphEditor graph = new GraphEditor();
+            graph.loadFromFile(handle + ".json");
+            ArrayList<String> followingList = crawlFollowingList(new Node(handle));
+            for (String tmp : followingList) {
+                graph.addEdge(handle, tmp);
+            }
+            ArrayList<String> followersList = crawlFollowersList(new Node(handle));
+            for (String tmp : followersList) {
+                graph.addEdge(tmp, handle);
+            }
+            skipped.add(handle);
+            graph.save(new Node(handle));
+            JSON.dumpToJSON(new ArrayList<>(skipped), "skipped.json");
+        }
     }
 }

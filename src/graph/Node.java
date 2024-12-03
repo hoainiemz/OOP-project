@@ -1,13 +1,13 @@
 package graph;
 
 import std.Str;
+import twitter.CrawlOptions;
 
 import java.util.LinkedHashMap;
 
 public class Node{
     private String user;
     private  String xpath;
-    private static String href = "https://nitter.poast.org/";
 
     public Node(LinkedHashMap<String, String> src) {
         this.user = src.get("user");
@@ -20,11 +20,17 @@ public class Node{
     }
 
     public Node(String user) {
+        if (user.charAt(0) == '@') {
+            user = user.substring(1);
+        }
         this.user = user;
         xpath = "";
     }
 
     public Node(String user, String xpath) {
+        if (user.charAt(0) == '@') {
+            user = user.substring(1);
+        }
         this.user = user;
         this.xpath = xpath;
     }
@@ -53,11 +59,11 @@ public class Node{
      * the url of the user/tweet
      * @return
      */
-    public String getUrl() {
+    public String getUrl(CrawlOptions crawlOptions) {
         if (isUser()) {
-            return href + user;
+            return crawlOptions.getUrl() + user;
         }
-        return href + user + "/status/" + xpath;
+        return crawlOptions.getUrl() + user + "/status/" + xpath;
     }
 
     /**

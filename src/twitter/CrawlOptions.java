@@ -10,12 +10,12 @@ public class CrawlOptions {
     private int maxRepliesPerTweet;
     private int maxUserPerKeyword;
     private String url;
-    private final String FOLLOWER_SELECTOR =  "body > div > div > div.profile-tab.sticky > div > div.profile-card-extra > div.profile-card-extra-links > ul > li.followers > span.profile-stat-num";
-    private final String CRAWL_SHOW_MORE_SELECTOR = "body > div.container > div > div.timeline-container > div > .show-more:not(.timeline-item)";
-    private final String TIMELINE_ITEM_SELECTOR = "body > div.container > div > div.timeline-container > div > div.timeline-item:not(.show-more)";
-    private final String SEARCH_SHOW_MORE_SELECTOR = "body > div.container > div > div.timeline > div.show-more:not(.timeline-item)";
-    private final String SEARCH_TIMELINE_ITEM_SELECTOR = "body > div > div > div.timeline > div:not(.show-more)";
-
+    private static final String FOLLOWER_SELECTOR =  "body > div > div > div.profile-tab.sticky > div > div.profile-card-extra > div.profile-card-extra-links > ul > li.followers > span.profile-stat-num";
+    private static final String CRAWL_SHOW_MORE_SELECTOR = "body > div.container > div > div.timeline-container > div > .show-more:not(.timeline-item)";
+    private static final String TIMELINE_ITEM_SELECTOR = "body > div.container > div > div.timeline-container > div > div.timeline-item:not(.show-more)";
+    private static final String SEARCH_SHOW_MORE_SELECTOR = "body > div.container > div > div.timeline > div.show-more:not(.timeline-item)";
+    private static final String SEARCH_TIMELINE_ITEM_SELECTOR = "body > div > div > div.timeline > div:not(.show-more)";
+    private String href = null;
     public String getSearchShowMoreSelector() {return SEARCH_SHOW_MORE_SELECTOR;}
 
     public String getCrawlShowMoreSelector() {
@@ -37,7 +37,6 @@ public class CrawlOptions {
     public CrawlOptions(String url) {
         init();
         setUrl(url);
-
     }
 
     public String getUrl() {
