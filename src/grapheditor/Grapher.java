@@ -19,6 +19,10 @@ public class Grapher {
         edgesList = new ArrayList<>();
     }
 
+    public ArrayList<Edge> getEdgesList() {
+        return edgesList;
+    }
+
     public void loadFromFile(String file) throws IOException {
         assert file.endsWith(".json");
         String currentUser = file.substring(0, file.length() - 5);

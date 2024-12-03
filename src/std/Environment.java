@@ -20,12 +20,12 @@ public class Environment {
         agent.crawl();
     }
 
-    public static void main(String[] args) throws InterruptedException, IOException     {
-//        GraphEditor graph = new GraphEditor();
-//        graph.load();
-//        graph.addEdge(new Node("no1"), new Node("no2"));
-        Grapher tmp = new Grapher();
-        tmp.load();
-        tmp.test();
+    public static void updateFollowingEdges() throws InterruptedException, IOException {
+        CrawlOptions options = new CrawlOptions("https://x.com/");
+        Twitter agent = new Twitter(options);
+        agent.updateFollowingEdges();
+    }
+
+    public static void main(String[] args) throws InterruptedException, IOException{
     }
 }

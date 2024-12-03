@@ -24,9 +24,9 @@ public class CrawlOptions {
 
     private void init() {
         kolMinFollower = 100000;
-        maxTweetsPerKol = 50;
-        maxRepliesPerTweet = 20;
-        maxUserPerKeyword = 20;
+        maxTweetsPerKol = 2;
+        maxRepliesPerTweet = 2;
+        maxUserPerKeyword = 2;
     }
 
     public CrawlOptions() {

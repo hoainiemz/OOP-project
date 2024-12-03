@@ -301,9 +301,9 @@ public class Twitter{
     }
 
     /**
-     * for all user in usernames.json, add all of their following to usernames.json
+     * for all crawled users, add all of their following edges to data
      */
-    public void updateUsernameList() throws IOException, InterruptedException {
+    public void updateFollowingEdges() throws IOException, InterruptedException {
         ArrayList<String> handles = JSON.loadArrayFromJSON("usernames.json");
         loadCookies("cookies.json");
         TreeSet<String> skipped = new TreeSet<>(new StringComparator());
