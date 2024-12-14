@@ -1,6 +1,6 @@
 package twitter;
 
-import org.openqa.selenium.WebElement;
+//import org.openqa.selenium.WebElement;
 
 import java.util.ArrayList;
 
@@ -24,9 +24,9 @@ public class CrawlOptions {
 
     private void init() {
         kolMinFollower = 100000;
-        maxTweetsPerKol = 2;
-        maxRepliesPerTweet = 2;
-        maxUserPerKeyword = 2;
+        maxTweetsPerKol = 200;
+        maxRepliesPerTweet = 100;
+        maxUserPerKeyword = 30;
     }
 
     public CrawlOptions() {

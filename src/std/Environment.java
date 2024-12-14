@@ -27,5 +27,13 @@ public class Environment {
     }
 
     public static void main(String[] args) throws InterruptedException, IOException{
+//        search();
+//        crawl();
+//        GraphEditor editor = new GraphEditor();
+//        editor.load();
+//        for (int i = 0; i < 10; i++) {
+//            System.out.println(i);
+//        }
+        updateFollowingEdges();
     }
 }

@@ -1,0 +1,32 @@
+digraph "src" {
+
+splines  = ortho;
+fontname = "Inconsolata";
+
+node [colorscheme = ylgnbu4];
+edge [colorscheme = dark28, dir = both];
+
+CommentEdge      [shape = record, label = "{ CommentEdge | + getWeight() : double\l + getType() : String\l }"];
+CrawlOptions     [shape = record, label = "{ CrawlOptions | + getMaxUserPerKeyword() : int\l + getMaxRepliesPerTweet() : int\l + getCrawlShowMoreSelector() : String\l + getSearchShowMoreSelector() : String\l + getUrl() : String\l + getTimelineItemSelector() : String\l + getKolMinFollower() : int\l + setMaxUserPerKeyword(int) : void\l + getSearchTimelineItemSelector() : String\l + setUrl(String) : void\l + setKolMinFollower(int) : void\l + getFollowerSelector() : String\l + getMaxTweetsPerKol() : int\l - init() : void\l + setMaxTweetsPerKol(int) : void\l + getMaxTweetPerUser() : int\l + setMaxTweetPerUser(int) : void\l + setMaxRepliesPerTweet(int) : void\l }"];
+Edge             [shape = record, label = "{ Edge | + getType() : String\l + getWeight() : double\l }"];
+Environment      [shape = record, label = "{ Environment | + updateFollowingEdges() : void\l + crawl() : void\l + search() : void\l + main(String[]) : void\l }"];
+FollowEdge       [shape = record, label = "{ FollowEdge | + getType() : String\l + getWeight() : double\l }"];
+GraphEditor      [shape = record, label = "{ GraphEditor | + getNodeList() : Set\<Node\>\l - visualizeGraph(Graph\<String, DefaultEdge\>) : void\l + save(Node) : void\l + addEdge(Node, Node) : void\l + addEdge(String, String) : void\l + visualize() : void\l + getJSONFilename(Node) : String\l + loadFromFile(String) : void\l + load() : void\l + crawled(Node) : boolean\l + getJSONFilename(String) : String\l }"];
+Grapher          [shape = record, label = "{ Grapher | + loadFromFile(String) : void\l + load() : void\l + getEdgesList() : ArrayList\<Edge\>\l }"];
+JSON             [shape = record, label = "{ JSON | + exists(String) : boolean\l + loadObjectFromJSON(String) : Object\l + setDirectory(String) : void\l + loadArrayFromJSON(String) : ArrayList\<T\>\l + dumpToJSON(ArrayList\<T\>, String) : void\l + getDirectory() : String\l }"];
+Node             [shape = record, label = "{ Node | + getUser() : String\l + setUser(String) : void\l + isUser() : boolean\l + setXpath(String) : void\l + getXpath() : String\l + constructFromTweetUrl(String) : Node\l + getUrl(CrawlOptions) : String\l }"];
+NodeComparator   [shape = record, label = "{ NodeComparator | + compare(Node, Node) : int\l }"];
+"Pair<K, V>"     [shape = record, label = "{ Pair\<K, V\> | + getValue() : V\l + setValue(V) : void\l + getKey() : K\l + setKey(K) : void\l }"];
+RepostEdge       [shape = record, label = "{ RepostEdge | + getType() : String\l + getWeight() : double\l }"];
+Str              [shape = record, label = "{ Str | + itos(int) : String\l + nthIndexOf(String, int, int) : int\l + stoi(String) : int\l }"];
+StringComparator [shape = record, label = "{ StringComparator | + compare(String, String) : int\l }"];
+TweetEdge        [shape = record, label = "{ TweetEdge | + getWeight() : double\l + getType() : String\l }"];
+Twitter          [shape = record, label = "{ Twitter | + visit(String) : void\l - findElement(String) : WebElement\l + loadCookies(String) : void\l + crawlTweet(Node, GraphEditor) : void\l + crawlKeyword(String, ArrayList\<String\>) : void\l + crawlFollowersList(Node) : ArrayList\<String\>\l + crawlUser(Node) : boolean\l - autoCrawlFollowers(TreeSet\<String\>) : void\l + crawlFollowingList(Node) : ArrayList\<String\>\l + search() : void\l + crawl() : void\l + updateFollowingEdges() : void\l }"];
+
+CommentEdge      -> Edge             [color = "#000082", style = solid , arrowtail = none    , arrowhead = normal  , taillabel = "", label = "", headlabel = ""];
+Edge             -> "Pair<K, V>"     [color = "#000082", style = solid , arrowtail = none    , arrowhead = normal  , taillabel = "", label = "", headlabel = ""];
+FollowEdge       -> Edge             [color = "#000082", style = solid , arrowtail = none    , arrowhead = normal  , taillabel = "", label = "", headlabel = ""];
+RepostEdge       -> Edge             [color = "#000082", style = solid , arrowtail = none    , arrowhead = normal  , taillabel = "", label = "", headlabel = ""];
+TweetEdge        -> Edge             [color = "#000082", style = solid , arrowtail = none    , arrowhead = normal  , taillabel = "", label = "", headlabel = ""];
+
+}

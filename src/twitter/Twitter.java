@@ -75,8 +75,8 @@ public class Twitter{
      */
     public void crawlTweet(Node tweet, GraphEditor graph) throws InterruptedException, IOException {
         visit(tweet.getUrl(options));
+        int cnt = 0;
         while (true) {
-            int cnt = 0;
             List<WebElement> replies = driver.findElements(By.cssSelector("#r > .reply.thread.thread-line"));
             for (WebElement reply : replies) {
                 String handle;
@@ -135,7 +135,7 @@ public class Twitter{
                 wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector(options.getCrawlShowMoreSelector())));
             }
             catch (Exception TimeoutException) {
-                return true;
+                break;
             }
             WebElement showMore = driver.findElement(By.cssSelector(options.getCrawlShowMoreSelector()));
             List<WebElement> timelineItem = driver.findElements(By.cssSelector(options.getTimelineItemSelector()));
@@ -172,7 +172,7 @@ public class Twitter{
      * @throws IOException
      */
     public void crawlKeyword(String keyword, ArrayList<String> list) throws InterruptedException, IOException {
-        String url = "https://nitter.poast.org/search?f=users&q=" + keyword;
+        String url = "https://nitter.poast.org/search?f=users&q=%23" + keyword;
         visit(url);
         int cnt = 0;
         while (true) {
@@ -184,17 +184,21 @@ public class Twitter{
             try {
                 showMore = driver.findElement(By.cssSelector(options.getSearchShowMoreSelector()));
             }
-            catch(Exception NoSuchElementException) {
+            catch(Exception e) {
                 break;
             }
             for (WebElement user : timelineItem) {
-                String handle = user.findElement(By.cssSelector("a.username")).getAttribute("innerHTML");
-                if (handle.charAt(0) == '@') {
-                    handle = handle.substring(1);
-                }
-                list.add(handle);
-                cnt++;
-                if (cnt >= options.getMaxUserPerKeyword()) {
+                try {
+                    String handle = user.findElement(By.cssSelector("a.username")).getAttribute("innerHTML");
+                    if (handle.charAt(0) == '@') {
+                        handle = handle.substring(1);
+                    }
+                    list.add(handle);
+                    cnt++;
+                    if (cnt >= options.getMaxUserPerKeyword()) {
+                        break;
+                    }
+                } catch (Exception e) {
                     break;
                 }
             }

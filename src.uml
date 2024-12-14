@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>/home/hoainiem/IdeaProjects/OOP project/src</OriginalElement>
+  <nodes>
+    <node x="126.20744484896431" y="623.8083817237303">std.Pair</node>
+    <node x="1252.8770313265643" y="76.82244413126654">json.JSON</node>
+    <node x="1767.5886101257174" y="793.7403466157377">std.Environment</node>
+    <node x="1247.4291265038805" y="392.07855001244104">grapheditor.GraphEditor</node>
+    <node x="511.33295455303096" y="1054.5558319871848">grapheditor.FollowEdge</node>
+    <node x="1414.4276144160126" y="1044.1309126474898">grapheditor.RepostEdge</node>
+    <node x="1113.9157884291708" y="994.184204062434">grapheditor.CommentEdge</node>
+    <node x="806.5326878903986" y="172.74773131664614">twitter.CrawlOptions</node>
+    <node x="269.0909962687609" y="856.2717196909">grapheditor.Edge</node>
+    <node x="450.4601784325089" y="-18.26220609686743">std.Str</node>
+    <node x="810.870851819865" y="1023.4478096147997">grapheditor.TweetEdge</node>
+    <node x="383.43521226534244" y="465.46675265547043">grapheditor.Node</node>
+    <node x="1394.8826661993771" y="890.677298087272">std.StringComparator</node>
+    <node x="1054.6587909083237" y="832.923542432608">grapheditor.NodeComparator</node>
+    <node x="-121.12810707474353" y="152.06272548170557">twitter.Twitter</node>
+    <node x="548.566695373801" y="823.3505545560718">grapheditor.Grapher</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="grapheditor.Edge" target="std.Pair" relationship="GENERALIZATION">
+      <point x="-100.5" y="-55.0" />
+      <point x="52.38355141979656" y="85.0" />
+    </edge>
+    <edge source="grapheditor.TweetEdge" target="grapheditor.Edge" relationship="GENERALIZATION">
+      <point x="1.4818013499962035E-4" y="-54.99980961479969" />
+      <point x="918.871" y="995.0" />
+      <point x="377.091" y="995.0" />
+      <point x="3.731239132775954E-6" y="55.00028030910005" />
+    </edge>
+    <edge source="grapheditor.FollowEdge" target="grapheditor.Edge" relationship="GENERALIZATION">
+      <point x="4.544696903963086E-5" y="-54.999831987184905" />
+      <point x="619.333" y="995.0" />
+      <point x="377.091" y="995.0" />
+      <point x="3.731239132775954E-6" y="55.00028030910005" />
+    </edge>
+    <edge source="grapheditor.CommentEdge" target="grapheditor.Edge" relationship="GENERALIZATION">
+      <point x="-107.99978842917079" y="-2.0406243396564605E-4" />
+      <point x="1044.371" y="1049.184" />
+      <point x="1044.371" y="995.0" />
+      <point x="377.091" y="995.0" />
+      <point x="3.731239132775954E-6" y="55.00028030910005" />
+    </edge>
+    <edge source="grapheditor.RepostEdge" target="grapheditor.Edge" relationship="GENERALIZATION">
+      <point x="-107.99961441601272" y="22.55308735251026" />
+      <point x="1044.371" y="1121.684" />
+      <point x="1044.371" y="995.0" />
+      <point x="377.091" y="995.0" />
+      <point x="3.731239132775954E-6" y="55.00028030910005" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Compact" zoom="0.573049001814882" showDependencies="false" x="980.0" y="583.0" />
+  <SelectedNodes />
+  <Categories>
+    <Category>Methods</Category>
+  </Categories>
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+
